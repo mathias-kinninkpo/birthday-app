@@ -1,116 +1,71 @@
-import { Howl } from 'howler';
-import { useEffect, useState, useRef } from 'react';
+// src/AudioHandler.js
+import { Howl, Howler } from 'howler'
+import { useEffect, useState, useRef } from 'react'
 
-// Gestionnaire audio pour l'application
 const useAudioHandler = (initialEnabled = true) => {
-  const [soundEnabled, setSoundEnabled] = useState(initialEnabled);
-  const [currentMusic, setCurrentMusic] = useState(null);
-  const musicRef = useRef(null);
-  const typeSoundRef = useRef(null);
-  const buttonSoundRef = useRef(null);
-  
-  // Initialiser les sons au chargement
+  const [soundEnabled, setSoundEnabled] = useState(initialEnabled)
+  const [currentMusic, setCurrentMusic] = useState(null)
+  const musicRef = useRef(null)
+  const typeSoundRef = useRef(null)
+  const buttonSoundRef = useRef(null)
+
   useEffect(() => {
-    // Musique d'ambiance - boîte à musique douce
     musicRef.current = new Howl({
       src: ['/src/assets/music-box-choir-35582.mp3'],
+      html5: true,      // <-- force HTML5 for autoplay
+      autoplay: true,
       loop: true,
-      volume: 0.5,
-      autoplay: false,
-    });
-    
-    // Son de machine à écrire
+      volume: 0.5
+    })
     typeSoundRef.current = new Howl({
       src: ['/src/assets/happy-birthday-155461.mp3'],
       volume: 0.1,
-      sprite: {
-        type: [0, 50]
-      }
-    });
-    
-    // Son de bouton
+      sprite: { type: [0, 50] }
+    })
     buttonSoundRef.current = new Howl({
       src: ['/src/assets/play-time-fun-upbeat-gaming-birthday-music-259703.mp3'],
       volume: 0.3,
-      sprite: {
-        click: [0, 300]
-      }
-    });
-    
+      sprite: { click: [0, 300] }
+    })
     return () => {
-      // Nettoyer les sons au démontage
-      if (musicRef.current) musicRef.current.stop();
-      if (typeSoundRef.current) typeSoundRef.current.stop();
-      if (buttonSoundRef.current) buttonSoundRef.current.stop();
-    };
-  }, []);
-  
-  // Gestion de l'activation/désactivation du son
+      musicRef.current.stop()
+      typeSoundRef.current.stop()
+      buttonSoundRef.current.stop()
+    }
+  }, [])
+
   useEffect(() => {
     if (musicRef.current) {
       if (soundEnabled) {
-        if (currentMusic === 'welcome') {
-          musicRef.current.play();
-        }
+        musicRef.current.play()
       } else {
-        musicRef.current.pause();
+        musicRef.current.pause()
       }
     }
-  }, [soundEnabled, currentMusic]);
-  
-  // Fonctions pour jouer les sons
+  }, [soundEnabled])
+
   const playTypeSound = () => {
-    if (soundEnabled && typeSoundRef.current) {
-      typeSoundRef.current.play('type');
-    }
-  };
-  
+    if (soundEnabled) typeSoundRef.current.play('type')
+  }
   const playButtonSound = () => {
-    if (soundEnabled && buttonSoundRef.current) {
-      buttonSoundRef.current.play('click');
-    }
-  };
-  
+    if (soundEnabled) buttonSoundRef.current.play('click')
+  }
   const playWelcomeMusic = () => {
-    if (soundEnabled && musicRef.current) {
-      setCurrentMusic('welcome');
-      musicRef.current.play();
-    }
-  };
-  
+    setCurrentMusic('welcome')
+    if (soundEnabled) musicRef.current.play()
+  }
   const stopAllMusic = () => {
-    if (musicRef.current) {
-      musicRef.current.stop();
-      setCurrentMusic(null);
-    }
-  };
-  
-  const changeBackgroundMusic = (musicName) => {
-    if (soundEnabled && musicRef.current) {
-      // Arrêter la musique actuelle
-      musicRef.current.stop();
-      
-      // Charger la nouvelle musique en fonction du nom
-      let src = '/src/assets/music-box-choir-35582.mp3'; // Par défaut
-      
-      if (musicName === 'celebration') {
-        src = '/src/assets/play-time-fun-upbeat-gaming-birthday-music-259703.mp3';
-      } else if (musicName === 'birthday') {
-        src = '/src/assets/happy-birthday-155461.mp3';
-      }
-      
-      // Créer une nouvelle instance avec la source mise à jour
-      musicRef.current = new Howl({
-        src: [src],
-        loop: true,
-        volume: 0.5,
-        autoplay: true,
-      });
-      
-      setCurrentMusic(musicName);
-    }
-  };
-  
+    musicRef.current.stop()
+    setCurrentMusic(null)
+  }
+  const changeBackgroundMusic = name => {
+    musicRef.current.stop()
+    let src = '/src/assets/music-box-choir-35582.mp3'
+    if (name === 'celebration') src = '/src/assets/play-time-fun-upbeat-gaming-birthday-music-259703.mp3'
+    musicRef.current = new Howl({ src: [src], loop: true, volume: 0.5, autoplay: true, html5: true })
+    setCurrentMusic(name)
+  }
+
   return {
     soundEnabled,
     setSoundEnabled,
@@ -119,7 +74,7 @@ const useAudioHandler = (initialEnabled = true) => {
     playWelcomeMusic,
     stopAllMusic,
     changeBackgroundMusic
-  };
-};
+  }
+}
 
-export default useAudioHandler;
+export default useAudioHandler

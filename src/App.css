@@ -190,10 +190,10 @@ h1, h2, h3 {
   50% { opacity: 0; }
 }
 
-/* Animation 3D pour l'âge */
+/* Animation 3D pour l'âge
 .perspective-1000 {
   perspective: 1000px;
-}
+} */
 
 .age-3d-container {
   position: relative;
@@ -260,4 +260,21 @@ h1, h2, h3 {
 .animate-on-scroll.visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.transform-style-preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.butterfly-card {
+  backface-visibility: hidden;
+}
+
+/* Amélioration de contraste */
+.main-content {
+  background: linear-gradient(to bottom, var(--color-ivory), var(--color-celestial-blue));
 }

@@ -14,9 +14,10 @@
     "framer-motion": "^12.8.0",
     "gsap": "^3.12.7",
     "howler": "^2.2.4",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-parallax": "^3.5.2",
+    "react-spring": "^9.7.5",
     "react-tsparticles": "^2.12.2",
     "three": "^0.176.0",
     "tsparticles": "^3.8.1"
