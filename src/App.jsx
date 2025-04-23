@@ -6,8 +6,13 @@ import './App.css'
 import WelcomeParticles, {
   StarParticles,
   FlowerParticles,
-  ConfettiParticles
-} from './StarParticles'
+  ConfettiParticles,
+  AutumnParticles,
+  WinterParticles,
+  FruitsParticles,
+  SpaceParticles
+} from './FallingElements'
+import AnimatedTypewriter from './AnimatedTypewriter'
 import useAudioHandler from './AudioHandler'
 import { motion } from 'framer-motion'
 
@@ -17,9 +22,22 @@ gsap.registerPlugin(Flip)
 function App() {
   const [showWelcome, setShowWelcome] = useState(true)
   const [showConfetti, setShowConfetti] = useState(false)
+  const [currentTheme, setCurrentTheme] = useState('fleurs')
+  const [typingCompleted, setTypingCompleted] = useState(false)
   const titleRef = useRef(null)
   const ageRef = useRef(null)
   const buttonRef = useRef(null)
+
+  // Définition des thèmes disponibles
+  const themes = {
+    fleurs: <FlowerParticles />,
+    étoiles: <StarParticles />,
+    confetti: <ConfettiParticles />,
+    automne: <AutumnParticles />,
+    hiver: <WinterParticles />,
+    fruits: <FruitsParticles />,
+    espace: <SpaceParticles />
+  }
 
   // Utiliser notre gestionnaire audio personnalisé
   const {
@@ -46,44 +64,27 @@ function App() {
   // Commencer la musique d'accueil
   useEffect(() => {
     if (showWelcome) playWelcomeMusic()
-  }, [showWelcome])
+  }, [showWelcome, playWelcomeMusic])
 
-  // Machine à écrire + confettis
+  // Gérer la fin de l'animation de machine à écrire
   useEffect(() => {
-    if (showWelcome && titleRef.current) {
-      const titleEl = titleRef.current
-      const fullText = titleEl.textContent
-      titleEl.textContent = ''
-      titleEl.style.opacity = 1
-      let i = 0
-
-      const typeInterval = setInterval(() => {
-        if (i < fullText.length) {
-          titleEl.textContent += fullText[i]
-          if (soundEnabled && i % 3 === 0) playTypeSound()
-          i++
-        } else {
-          clearInterval(typeInterval)
-          // âge
-          gsap.fromTo(
-            ageRef.current,
-            { scale: 0, opacity: 0 },
-            { scale: 1, opacity: 1, duration: 1, ease: 'elastic.out(1,0.5)' }
-          )
-          // bouton
-          gsap.fromTo(
-            buttonRef.current,
-            { scale: 0, opacity: 0 },
-            { scale: 1, opacity: 1, duration: 0.5, delay: 1 }
-          )
-          // confettis
-          setTimeout(() => setShowConfetti(true), 1500)
-        }
-      }, 100)
-
-      return () => clearInterval(typeInterval)
+    if (typingCompleted) {
+      // âge
+      gsap.fromTo(
+        ageRef.current,
+        { scale: 0, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 1, ease: 'elastic.out(1,0.5)' }
+      )
+      // bouton
+      gsap.fromTo(
+        buttonRef.current,
+        { scale: 0, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.5, delay: 1 }
+      )
+      // confettis
+      setTimeout(() => setShowConfetti(true), 1500)
     }
-  }, [showWelcome, soundEnabled])
+  }, [typingCompleted])
 
   // Transition vers le contenu principal
   const enterExperience = () => {
@@ -139,19 +140,25 @@ function App() {
     }
   }, [showWelcome])
 
+
+
   return (
     <div className="App">
       {showWelcome ? (
         <div className="welcome-screen h-screen w-full flex flex-col items-center justify-center bg-ivory overflow-hidden relative">
           <WelcomeParticles />
-           <ConfettiParticles />
+          {showConfetti && <ConfettiParticles />}
 
-          <h1
-            ref={titleRef}
-            className="text-4xl md:text-6xl text-pale-gold font-cursive mb-4 relative z-10 typewriter-text text-center px-4"
-          >
-            Joyeux Anniversaire, Fidèle !
-          </h1>
+          <div ref={titleRef} className="relative z-10">
+            <AnimatedTypewriter 
+              text="Joyeux Anniversaire, Fidèle !"
+              className="text-4xl md:text-6xl text-pale-gold font-cursive mb-4 relative z-10 text-center px-4"
+              typingSpeed={100}
+              penColor="#D4AF37"
+              playSound={soundEnabled ? playTypeSound : null}
+              onTypingComplete={() => setTypingCompleted(true)}
+            />
+          </div>
 
           <div className="age-3d-container mb-8 perspective-1000 z-10 w-full text-center">
             <motion.div
@@ -195,8 +202,9 @@ function App() {
         <div className="main-content bg-gradient-to-b from-ivory to-celestial-blue min-h-screen">
           <section className="h-screen flex items-center justify-center relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-b from-ivory to-celestial-blue opacity-20"></div>
-            <StarParticles />
-            <FlowerParticles />
+            
+            {/* Affichage dynamique des particules en fonction du thème */}
+            {themes[currentTheme]}
 
             <div className="card-container perspective-1000 z-30" id="cardContainer">
               <div className="butterfly-card transform-style-preserve-3d">
@@ -208,6 +216,8 @@ function App() {
                       et que chaque note du ciel vienne bercer ton cœur. »
                     </p>
                   </div>
+                  
+                
                 </div>
                 <div className="wing right-wing"></div>
               </div>
