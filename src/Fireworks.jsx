@@ -3,9 +3,10 @@ import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import * as THREE from 'three';
 
-const Fireworks = ({ playButtonSound, playMusic }) => {
-  const [showFireworks, setShowFireworks] = useState(false);
-  const [calmMode, setCalmMode] = useState(false);
+const Fireworks = ({ playButtonSound, playMusic, openMessageModal }) => {
+  const [showFireworks, setShowFireworks] = useState(true); // Activé par défaut
+  // Mode calme activé par défaut
+  const [calmMode, setCalmMode] = useState(true);
   const containerRef = useRef(null);
   const rendererRef = useRef(null);
   const sceneRef = useRef(null);
@@ -95,6 +96,13 @@ const Fireworks = ({ playButtonSound, playMusic }) => {
       particlesRef.current = [];
     };
   }, [showFireworks]);
+  
+  // Lancer la musique "Joyeux Anniversaire" au chargement
+  useEffect(() => {
+    if (showFireworks && playMusic) {
+      playMusic('birthday');
+    }
+  }, [showFireworks, playMusic]);
   
   // Créer le gâteau 3D
   const createCake = () => {
@@ -278,89 +286,103 @@ const Fireworks = ({ playButtonSound, playMusic }) => {
     });
   };
   
-  // Démarrer le spectacle de feux d'artifice
-  const startFireworks = () => {
-    if (playButtonSound) playButtonSound();
-    if (playMusic) playMusic('celebration');
-    setShowFireworks(true);
-    
-    // Scroll to bottom effect
-    window.scrollTo({
-      top: document.body.scrollHeight,
-      behavior: 'smooth'
-    });
-  };
-  
-  // Activer/désactiver le mode calme
+  // Basculer entre les modes festif et calme
   const toggleCalmMode = () => {
     if (playButtonSound) playButtonSound();
     setCalmMode(!calmMode);
   };
+  
+  // Révéler un message spécial d'anniversaire
+  const showBirthdayMessage = () => {
+    if (playButtonSound) playButtonSound();
+    if (openMessageModal) {
+      openMessageModal(
+        "Joyeux Anniversaire, Fidèle!", 
+        "Très chère Fidèle,\n\nEn ce jour béni qui marque tes 23 années de vie, je rends grâce à notre Seigneur pour le privilège de pouvoir te souhaiter un joyeux anniversaire.\n\nBien que nos chemins ne se croisent qu'à l'église et lors des moments d'intercession, j'ai toujours été touché par la douceur de ton esprit et la profondeur de ta foi. Ton respect envers les autres et ton humilité sont des témoignages vivants de ta relation avec le Christ.\n\nPuisse cette nouvelle année de ta vie être remplie de révélations divines et de grâces abondantes. Que le Seigneur te guide dans chacune de tes décisions et qu'Il accomplisse les désirs de ton cœur selon Sa volonté parfaite.\n\nJe prie pour que ta relation avec Dieu s'approfondisse encore davantage, que tes talents s'épanouissent pleinement et que ta lumière continue d'inspirer ceux qui t'entourent.\n\nQue ce message soit peut-être le début d'une amitié fraternelle plus profonde, enracinée dans notre foi commune et notre amour pour le Seigneur.\n\nAvec une sincère admiration et des prières pour ton bonheur,\n\nMathias"
+      );
+    }
+  };
 
   return (
-    <div className="relative py-24">
+    <div className="relative py-16 md:py-24">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        className="text-center mb-16"
+        className="text-center mb-12 md:mb-16 px-4"
       >
         <h2 className="text-4xl md:text-5xl font-cursive text-pale-gold mb-4">
-          La Surprise Finale
+          Célébration Finale
         </h2>
         <p className="text-lg max-w-2xl mx-auto mb-8">
-          Pour célébrer tes 23 ans, un spectacle de lumière digne de cette journée spéciale.
+          Un moment spécial pour célébrer tes 23 ans et te souhaiter les plus belles bénédictions du ciel.
         </p>
         
-        {!showFireworks ? (
+        <div className="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4">
           <motion.button
-            className="px-6 py-3 bg-pale-gold text-ivory rounded-full hover:bg-opacity-90 transition-colors flex items-center mx-auto"
-            whileHover={{ scale: 1.05, boxShadow: "0px 0px 15px rgba(230, 190, 138, 0.7)" }}
-            whileTap={{ scale: 0.98 }}
-            onClick={startFireworks}
-          >
-            <span className="mr-2">🕯️</span>
-            Allumer la flamme
-          </motion.button>
-        ) : (
-          <motion.button
-            className="px-6 py-3 bg-celestial-blue text-ivory rounded-full hover:bg-opacity-90 transition-colors mx-auto"
+            className="px-6 py-3 bg-celestial-blue text-ivory rounded-full hover:bg-opacity-90 transition-colors"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.98 }}
             onClick={toggleCalmMode}
           >
             {calmMode ? "Mode festif" : "Mode calme"}
           </motion.button>
-        )}
+          
+          <motion.button
+            className="px-6 py-3 bg-pale-gold text-ivory rounded-full hover:bg-opacity-90 transition-colors"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={showBirthdayMessage}
+          >
+            Message d'anniversaire
+          </motion.button>
+        </div>
       </motion.div>
       
-      {/* Conteneur Three.js pour les feux d'artifice */}
+      {/* Conteneur Three.js pour les feux d'artifice - visible uniquement en mode festif */}
       <div 
         ref={containerRef} 
-        className={`w-full h-96 relative ${!showFireworks ? 'hidden' : ''}`}
+        className={`w-full h-80 md:h-96 relative ${calmMode ? 'hidden' : ''}`}
       ></div>
       
-      {/* Version alternative pour le mode calme */}
-      {showFireworks && calmMode && (
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="py-8 px-12 bg-ivory rounded-lg shadow-xl">
-            <motion.div
-              animate={{ scale: [1, 1.03, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              <h3 className="text-3xl font-cursive text-pale-gold mb-4">Joyeux 23ème Anniversaire</h3>
-              <p className="text-xl mb-6">
-                Que cette année t'apporte paix, joie et accomplissements dans tous les domaines de ta vie.
+      {/* Version calme (visible par défaut) */}
+      <div className="max-w-4xl mx-auto text-center px-4">
+        <div className="py-8 px-6 md:px-12 bg-ivory rounded-lg shadow-xl">
+          <motion.div
+            animate={{ scale: [1, 1.03, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            <h3 className="text-3xl font-cursive text-pale-gold mb-4">Joyeux 23ème Anniversaire</h3>
+            <p className="text-lg md:text-xl mb-6">
+              Que cette année t'apporte paix, joie et accomplissements dans tous les domaines de ta vie.
+            </p>
+            <div className="text-4xl md:text-5xl mb-4">🎂✨</div>
+            <p className="text-base md:text-lg text-gray-700 italic">
+              "Car je connais les projets que j'ai formés sur vous, dit l'Éternel, 
+              projets de paix et non de malheur, afin de vous donner un avenir et de l'espérance."
+            </p>
+            <p className="text-sm text-gray-500 mt-2">Jérémie 29:11</p>
+            
+            <div className="mt-8 px-6 py-6 bg-pale-gold bg-opacity-10 rounded-lg border border-pale-gold border-opacity-30">
+              <h4 className="text-xl font-cursive text-pale-gold mb-3">Ma prière pour toi</h4>
+              <p className="text-gray-700">
+                Père Céleste, je Te remercie pour la vie de Fidèle. En ce jour spécial, je Te demande de la couvrir de Ta protection divine et de l'inonder de Tes bénédictions. Guide ses pas selon Ta volonté parfaite et accorde-lui la sagesse pour discerner Ton plan pour sa vie.
               </p>
-              <div className="text-5xl mb-4">🎂✨</div>
-              <p className="text-lg text-gray-700">
-                "Car je connais les projets que j'ai formés sur vous, dit l'Éternel, 
-                projets de paix et non de malheur, afin de vous donner un avenir et de l'espérance."
+              <p className="text-gray-700 mt-2">
+                Seigneur, qu'en cette 23ème année, sa relation avec Toi s'approfondisse davantage. Que sa foi grandisse et que son témoignage continue d'impacter positivement ceux qui l'entourent. Accorde-lui la force de surmonter les défis et la grâce de rester humble dans ses succès.
               </p>
-            </motion.div>
-          </div>
+              <p className="text-gray-700 mt-2">
+                Je prie pour son épanouissement dans tous les domaines de sa vie : spirituel, professionnel, relationnel et personnel. Que Ta faveur l'accompagne partout où elle ira.
+              </p>
+              <p className="text-gray-700 mt-2">
+                Au nom puissant de Jésus-Christ, Amen.
+              </p>
+            </div>
+            
+            <p className="mt-6 text-right text-pale-gold font-cursive">- Mathias</p>
+          </motion.div>
         </div>
-      )}
+      </div>
     </div>
   );
 };
