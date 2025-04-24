@@ -325,7 +325,7 @@ const Fireworks = ({ playButtonSound, playMusic, openMessageModal }) => {
             whileTap={{ scale: 0.98 }}
             onClick={toggleCalmMode}
           >
-            {calmMode ? "Mode festif" : "Mode calme"}
+            {calmMode ? "Clique ici" : "Change ici"}
           </motion.button>
           
           <motion.button

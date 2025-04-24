@@ -1,6 +1,9 @@
 // src/AudioHandler.js
 import { Howl, Howler } from 'howler'
 import { useEffect, useState, useRef } from 'react'
+import welcomeMusic from './assets/music-box-choir-35582.mp3';
+import typeSound from './assets/happy-birthday-155461.mp3';
+import buttonSound from './assets/play-time-fun-upbeat-gaming-birthday-music-259703.mp3';
 
 const useAudioHandler = (initialEnabled = false) => {
   const [soundEnabled, setSoundEnabled] = useState(initialEnabled)
@@ -13,7 +16,7 @@ const useAudioHandler = (initialEnabled = false) => {
   useEffect(() => {
     // Musique d'accueil
     musicRef.current = new Howl({
-      src: ['/src/assets/music-box-choir-35582.mp3'],
+      src: [welcomeMusic],
       html5: true,      // <-- force HTML5 pour autoplay
       autoplay: false,  // Désactivé par défaut, on attendra l'autorisation
       loop: true,
@@ -22,14 +25,14 @@ const useAudioHandler = (initialEnabled = false) => {
     
     // Son de frappe pour la machine à écrire
     typeSoundRef.current = new Howl({
-      src: ['/src/assets/happy-birthday-155461.mp3'],
+      src: [typeSound],
       volume: 0.1,
       sprite: { type: [0, 50] }
     })
     
     // Son de bouton
     buttonSoundRef.current = new Howl({
-      src: ['/src/assets/play-time-fun-upbeat-gaming-birthday-music-259703.mp3'],
+      src: [buttonSound],
       volume: 0.3,
       sprite: { click: [0, 300] }
     })
