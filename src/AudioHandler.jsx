@@ -107,7 +107,7 @@ const useAudioHandler = (initialEnabled = false) => {
       if (soundEnabled && birthdaySongRef.current) birthdaySongRef.current.play()
     } else if (name === 'celebration') {
       // Jouer la musique festive
-      let src = '/src/assets/play-time-fun-upbeat-gaming-birthday-music-259703.mp3'
+      let src = typeSound
       musicRef.current = new Howl({ 
         src: [src], 
         loop: true, 
@@ -119,7 +119,7 @@ const useAudioHandler = (initialEnabled = false) => {
       setCurrentMusic('celebration')
     } else {
       // Jouer la musique d'accueil par défaut
-      let src = '/src/assets/music-box-choir-35582.mp3'
+      let src = buttonSound
       musicRef.current = new Howl({ 
         src: [src], 
         loop: true, 

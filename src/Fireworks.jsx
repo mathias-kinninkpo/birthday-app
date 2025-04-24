@@ -2,11 +2,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import * as THREE from 'three';
+import placeholder from './assets/placeholder.jpg'
+import portrait from './assets/portrait.jpg'
 
 const Fireworks = ({ playButtonSound, playMusic, openMessageModal }) => {
   const [showFireworks, setShowFireworks] = useState(true); // Activé par défaut
-  // Mode calme activé par défaut
-  const [calmMode, setCalmMode] = useState(true);
+  // Mode festif activé par défaut (calmMode à false)
+  const [calmMode, setCalmMode] = useState(false);
   const containerRef = useRef(null);
   const rendererRef = useRef(null);
   const sceneRef = useRef(null);
@@ -82,20 +84,30 @@ const Fireworks = ({ playButtonSound, playMusic, openMessageModal }) => {
     
     animate();
     
+    // Ajouter quelques feux d'artifice initiaux
+    if (!calmMode) {
+      // Ajouter des feux d'artifice initiaux à différentes positions
+      setTimeout(() => {
+        addFirework(-5, 3, -3, 0xffffaa);
+        addFirework(0, 5, -4, 0xffaaaa);
+        addFirework(5, 4, -2, 0xaaffaa);
+      }, 500);
+    }
+    
     // Nettoyage
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      cancelAnimationFrame(animationFrameId);
-      if (rendererRef.current && rendererRef.current.domElement) {
-        rendererRef.current.domElement.remove();
-      }
-      rendererRef.current = null;
-      sceneRef.current = null;
-      cameraRef.current = null;
-      fireworksRef.current = [];
-      particlesRef.current = [];
-    };
-  }, [showFireworks]);
+    // return () => {
+    //   window.removeEventListener('resize', handleResize);
+    //   cancelAnimationFrame(animationFrameId);
+    //   if (rendererRef.current && rendererRef.current.domElement) {
+    //     rendererRef.current.domElement.remove();
+    //   }
+    //   rendererRef.current = null;
+    //   sceneRef.current = null;
+    //   cameraRef.current = null;
+    //   fireworksRef.current = [];
+    //   particlesRef.current = [];
+    // };
+  }, [showFireworks, calmMode]);
   
   // Lancer la musique "Joyeux Anniversaire" au chargement
   useEffect(() => {
@@ -184,7 +196,7 @@ const Fireworks = ({ playButtonSound, playMusic, openMessageModal }) => {
   
   // Ajouter un feu d'artifice
   const addFirework = (x, y, z, color) => {
-    if (!sceneRef.current || !showFireworks || calmMode) return;
+    if (!sceneRef.current || !showFireworks) return;
     
     // Position de base
     const fireworkGroup = new THREE.Group();
@@ -246,7 +258,7 @@ const Fireworks = ({ playButtonSound, playMusic, openMessageModal }) => {
   // Mettre à jour les feux d'artifice
   const updateFireworks = () => {
     // Créer de nouveaux feux d'artifice aléatoirement
-    if (showFireworks && !calmMode && Math.random() < 0.03) {
+    if (showFireworks && Math.random() < 0.03) {
       const x = -8 + Math.random() * 16;
       const y = 0 + Math.random() * 6;
       const z = -5 + Math.random() * 2;
@@ -325,7 +337,7 @@ const Fireworks = ({ playButtonSound, playMusic, openMessageModal }) => {
             whileTap={{ scale: 0.98 }}
             onClick={toggleCalmMode}
           >
-            {calmMode ? "Clique ici" : "Change ici"}
+            {calmMode ? "Mode festif" : "Mode calme"}
           </motion.button>
           
           <motion.button
@@ -345,13 +357,30 @@ const Fireworks = ({ playButtonSound, playMusic, openMessageModal }) => {
         className={`w-full h-80 md:h-96 relative ${calmMode ? 'hidden' : ''}`}
       ></div>
       
-      {/* Version calme (visible par défaut) */}
+      {/* Version avec image et texte - visible dans les deux modes */}
       <div className="max-w-4xl mx-auto text-center px-4">
         <div className="py-8 px-6 md:px-12 bg-ivory rounded-lg shadow-xl">
           <motion.div
             animate={{ scale: [1, 1.03, 1] }}
             transition={{ duration: 2, repeat: Infinity }}
           >
+            {/* Photo de Fidèle */}
+            <div className="relative mx-auto mb-6 w-48 h-48 md:w-64 md:h-64 rounded-full overflow-hidden border-4 border-pale-gold shadow-lg">
+              <img 
+                src={placeholder}
+                alt="Fidèle" 
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.target.src = placeholder;
+                  e.target.alt = 'Image non disponible';
+                }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-20"></div>
+              
+              {/* Effet lumineux autour de la photo */}
+              <div className="absolute -inset-1 bg-pale-gold opacity-20 rounded-full animate-pulse"></div>
+            </div>
+            
             <h3 className="text-3xl font-cursive text-pale-gold mb-4">Joyeux 23ème Anniversaire</h3>
             <p className="text-lg md:text-xl mb-6">
               Que cette année t'apporte paix, joie et accomplissements dans tous les domaines de ta vie.
