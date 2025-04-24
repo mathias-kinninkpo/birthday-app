@@ -151,7 +151,7 @@ function App() {
     if (playButtonSound) playButtonSound();
     
     // Changer la musique en fonction de la page
-    if (page === 'greeting-card') {
+    if (page === 'greeting-card' || page === 'carousel' || page === 'timeline' || page === 'wishes-wall') {
       setTimeout(() => {
         if (soundEnabled) changeBackgroundMusic('celebration');
       }, 500);
@@ -315,10 +315,10 @@ function App() {
                     <div className="card-body p-4 md:p-8 bg-ivory border border-pale-gold rounded-lg shadow-lg">
                       <div className="quote-container text-center mb-8">
                         <p className="text-lg md:text-2xl italic quote-text font-cursive text-gray-700">
-                            « Pour découvrir ton voyage d'anniversaire,<br />
-                            suis la flèche dorée ➝ en bas à droite,<br />
-                            ou danse avec les icônes du ciel en haut.<br />
-                            De gauche à droite, comme le soleil, avance dans la lumière. »
+                            «Chère fidèle, utilisez la flèche en bas à droite <br />
+                            ou les icônes en haut <br />
+                            pour naviguer entre les pages. »<br />
+                           
                           </p>
                         </div>
                       

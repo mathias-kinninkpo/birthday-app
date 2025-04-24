@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from 'react'
 import welcomeMusic from './assets/music-box-choir-35582.mp3';
 import typeSound from './assets/happy-birthday-155461.mp3';
 import buttonSound from './assets/play-time-fun-upbeat-gaming-birthday-music-259703.mp3';
+import celebrationMusic from './assets/play-time-fun-upbeat-gaming-birthday-music-259703.mp3';; // Utilisons un fichier existant pour la célébration
 
 const useAudioHandler = (initialEnabled = false) => {
   const [soundEnabled, setSoundEnabled] = useState(initialEnabled)
@@ -12,13 +13,14 @@ const useAudioHandler = (initialEnabled = false) => {
   const typeSoundRef = useRef(null)
   const buttonSoundRef = useRef(null)
   const birthdaySongRef = useRef(null)
+  const celebrationMusicRef = useRef(null) // Nouvelle référence pour la musique de célébration
 
   useEffect(() => {
     // Musique d'accueil
     musicRef.current = new Howl({
       src: [welcomeMusic],
-      html5: true,      // <-- force HTML5 pour autoplay
-      autoplay: false,  // Désactivé par défaut, on attendra l'autorisation
+      html5: true,
+      autoplay: false,
       loop: true,
       volume: 0.5
     })
@@ -39,10 +41,18 @@ const useAudioHandler = (initialEnabled = false) => {
     
     // Chanson "Joyeux Anniversaire" pour la finale
     birthdaySongRef.current = new Howl({
-      src: ['/src/assets/happy-birthday-155461.mp3'],
+      src: [typeSound], // Utilisons directement le fichier importé
       html5: true,
       loop: true,
       volume: 0.6
+    })
+    
+    // Musique de célébration
+    celebrationMusicRef.current = new Howl({
+      src: [celebrationMusic], // Utilisons directement le fichier importé
+      html5: true,
+      loop: true,
+      volume: 0.5
     })
     
     return () => {
@@ -51,6 +61,7 @@ const useAudioHandler = (initialEnabled = false) => {
       if (typeSoundRef.current) typeSoundRef.current.stop()
       if (buttonSoundRef.current) buttonSoundRef.current.stop()
       if (birthdaySongRef.current) birthdaySongRef.current.stop()
+      if (celebrationMusicRef.current) celebrationMusicRef.current.stop()
     }
   }, [])
 
@@ -69,6 +80,14 @@ const useAudioHandler = (initialEnabled = false) => {
         birthdaySongRef.current.play()
       } else {
         birthdaySongRef.current.pause()
+      }
+    }
+    
+    if (celebrationMusicRef.current) {
+      if (soundEnabled && currentMusic === 'celebration') {
+        celebrationMusicRef.current.play()
+      } else {
+        celebrationMusicRef.current.pause()
       }
     }
   }, [soundEnabled, currentMusic])
@@ -94,6 +113,7 @@ const useAudioHandler = (initialEnabled = false) => {
   const stopAllMusic = () => {
     if (musicRef.current) musicRef.current.stop()
     if (birthdaySongRef.current) birthdaySongRef.current.stop()
+    if (celebrationMusicRef.current) celebrationMusicRef.current.stop()
     setCurrentMusic(null)
   }
   
@@ -107,27 +127,12 @@ const useAudioHandler = (initialEnabled = false) => {
       if (soundEnabled && birthdaySongRef.current) birthdaySongRef.current.play()
     } else if (name === 'celebration') {
       // Jouer la musique festive
-      let src = typeSound
-      musicRef.current = new Howl({ 
-        src: [src], 
-        loop: true, 
-        volume: 0.5, 
-        autoplay: soundEnabled, 
-        html5: true 
-      })
-      musicRef.current.play()
       setCurrentMusic('celebration')
+      if (soundEnabled && celebrationMusicRef.current) celebrationMusicRef.current.play()
     } else {
       // Jouer la musique d'accueil par défaut
-      let src = buttonSound
-      musicRef.current = new Howl({ 
-        src: [src], 
-        loop: true, 
-        volume: 0.5, 
-        autoplay: soundEnabled, 
-        html5: true 
-      })
       setCurrentMusic('welcome')
+      if (soundEnabled && musicRef.current) musicRef.current.play()
     }
   }
 
